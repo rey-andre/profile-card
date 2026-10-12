@@ -297,14 +297,10 @@ export default async function PortfolioPage() {
 
         {/* Footer */}
         <footer className="mt-20 border-t border-[#e1bee7]/15 py-8 px-4 text-center text-xs text-gray-400">
-          <p>© {new Date().getFullYear()} Reynold Andre. Built with Next.js, Supabase, and Tailwind CSS.</p>
+          <p>© {new Date().getFullYear()} Reynold Andre</p>
           <div className="mt-2 flex items-center justify-center gap-4">
             <Link href="/" className="hover:text-[#ff3f81] transition-colors">
               Profile Card
-            </Link>
-            <span>•</span>
-            <Link href="/admin" className="hover:text-[#ff3f81] transition-colors">
-              Admin CMS
             </Link>
           </div>
         </footer>
