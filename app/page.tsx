@@ -123,15 +123,6 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Subtle CMS Admin Link */}
-        <div className="mt-4 text-center">
-          <Link
-            href="/admin"
-            className="text-[11px] text-[#e1bee7]/40 hover:text-[#ff3f81] transition-colors"
-          >
-            Admin Portal
-          </Link>
-        </div>
       </main>
     </div>
   );
