@@ -4,13 +4,93 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Menu, X, Mail } from "lucide-react";
+import gsap from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollToPlugin, ScrollTrigger);
+}
 
 interface PortfolioNavProps {
   email: string;
 }
 
+const NAV_ITEMS = [
+  { id: "about", label: "About" },
+  { id: "education", label: "Education" },
+  { id: "projects", label: "Projects" },
+];
+
 export default function PortfolioNav({ email }: PortfolioNavProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("about");
+
+  useGSAP(() => {
+    // Track active section on scroll with ScrollTrigger
+    NAV_ITEMS.forEach((item) => {
+      const el = document.getElementById(item.id);
+      if (!el) return;
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: "top 180px",
+        end: "bottom 180px",
+        onToggle: (self) => {
+          if (self.isActive) {
+            setActiveSection(item.id);
+          }
+        },
+      });
+    });
+  }, []);
+
+  const handleScrollTo = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string
+  ) => {
+    e.preventDefault();
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    setMobileMenuOpen(false);
+    setActiveSection(targetId);
+
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReduced) {
+      target.scrollIntoView({ behavior: "auto" });
+      window.history.pushState(null, "", `#${targetId}`);
+      return;
+    }
+
+    gsap.to(window, {
+      duration: 0.85,
+      scrollTo: {
+        y: target,
+        offsetY: 76, // Height of sticky navbar + top padding
+      },
+      ease: "power2.inOut",
+      onComplete: () => {
+        window.history.pushState(null, "", `#${targetId}`);
+
+        // Subtle accent feedback on the reached section
+        const cardTarget = target.querySelector(".profile-card") || target;
+        gsap.fromTo(
+          cardTarget,
+          { borderColor: "rgba(255, 63, 129, 0.6)" },
+          {
+            borderColor: "rgba(225, 190, 231, 0.15)",
+            duration: 1.2,
+            ease: "power2.out",
+          }
+        );
+      },
+    });
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-[#19153c]/90 backdrop-blur-md border-b border-[#e1bee7]/15">
@@ -51,15 +131,28 @@ export default function PortfolioNav({ email }: PortfolioNavProps) {
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Profile Card</span>
           </Link>
-          <a href="#about" className="hover:text-white transition-colors">
-            About
-          </a>
-          <a href="#education" className="hover:text-white transition-colors">
-            Education
-          </a>
-          <a href="#projects" className="hover:text-white transition-colors">
-            Projects
-          </a>
+
+          {NAV_ITEMS.map((item) => {
+            const isActive = activeSection === item.id;
+            return (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(e) => handleScrollTo(e, item.id)}
+                className={`relative py-1 transition-colors ${
+                  isActive
+                    ? "text-[#ff3f81] font-semibold"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                {item.label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#ff3f81] rounded-full" />
+                )}
+              </a>
+            );
+          })}
+
           <a
             href={`mailto:${email}`}
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#ff3f81] hover:bg-[#e0326f] text-white text-xs font-medium transition-all shadow-md shadow-[#ff3f81]/30 active:scale-95"
@@ -90,27 +183,25 @@ export default function PortfolioNav({ email }: PortfolioNavProps) {
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Profile Card</span>
           </Link>
-          <a
-            href="#about"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-sm text-gray-300 hover:text-white py-1.5"
-          >
-            About
-          </a>
-          <a
-            href="#education"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-sm text-gray-300 hover:text-white py-1.5"
-          >
-            Education
-          </a>
-          <a
-            href="#projects"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-sm text-gray-300 hover:text-white py-1.5"
-          >
-            Projects
-          </a>
+
+          {NAV_ITEMS.map((item) => {
+            const isActive = activeSection === item.id;
+            return (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(e) => handleScrollTo(e, item.id)}
+                className={`block text-sm py-1.5 transition-colors ${
+                  isActive
+                    ? "text-[#ff3f81] font-semibold"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+
           <a
             href={`mailto:${email}`}
             className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#ff3f81] text-white text-xs font-medium"
