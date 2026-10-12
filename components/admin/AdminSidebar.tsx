@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   User,
+  Briefcase,
   GraduationCap,
   FolderGit2,
   ExternalLink,
@@ -26,6 +27,11 @@ const NAV_ITEMS = [
     name: "Profile",
     href: "/admin/profile",
     icon: User,
+  },
+  {
+    name: "Experience",
+    href: "/admin/experience",
+    icon: Briefcase,
   },
   {
     name: "Education",

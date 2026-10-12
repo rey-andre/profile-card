@@ -89,7 +89,39 @@ export default function PortfolioAnimations({ children }: PortfolioAnimationsPro
             "-=0.2"
           );
 
-        // 3. Education Section Entrance
+        // 3. Work Experience Section Entrance
+        const expHeader = document.querySelector(".gsap-exp-header");
+        if (expHeader) {
+          gsap.from(".gsap-exp-header", {
+            scrollTrigger: {
+              trigger: ".gsap-exp-header",
+              start: "top 85%",
+              toggleActions: "play none none none",
+            },
+            opacity: 0,
+            y: 22,
+            duration: 0.55,
+            ease: "power2.out",
+          });
+        }
+
+        const expCards = document.querySelectorAll(".gsap-exp-card");
+        if (expCards.length > 0) {
+          gsap.from(".gsap-exp-card", {
+            scrollTrigger: {
+              trigger: ".gsap-exp-list",
+              start: "top 82%",
+              toggleActions: "play none none none",
+            },
+            opacity: 0,
+            y: 28,
+            stagger: 0.12,
+            duration: 0.6,
+            ease: "power2.out",
+          });
+        }
+
+        // 4. Education Section Entrance
         const eduHeader = document.querySelector(".gsap-edu-header");
         if (eduHeader) {
           gsap.from(".gsap-edu-header", {

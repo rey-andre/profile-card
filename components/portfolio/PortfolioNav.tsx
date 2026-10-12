@@ -19,6 +19,7 @@ interface PortfolioNavProps {
 
 const NAV_ITEMS = [
   { id: "about", label: "About" },
+  { id: "experience", label: "Experience" },
   { id: "education", label: "Education" },
   { id: "projects", label: "Projects" },
 ];

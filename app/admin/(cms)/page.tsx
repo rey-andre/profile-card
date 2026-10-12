@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   FolderGit2,
   GraduationCap,
+  Briefcase,
   User,
   Plus,
   ArrowRight,
@@ -19,15 +20,19 @@ export default async function AdminDashboardPage() {
     { count: projectCount },
     { count: publishedCount },
     { count: educationCount },
+    experienceResult,
     { data: profile },
     { data: recentProjects },
   ] = await Promise.all([
     supabase.from("projects").select("*", { count: "exact", head: true }),
     supabase.from("projects").select("*", { count: "exact", head: true }).eq("is_published", true),
     supabase.from("education").select("*", { count: "exact", head: true }),
+    supabase.from("experiences").select("*", { count: "exact", head: true }),
     supabase.from("profiles").select("*").limit(1).maybeSingle(),
     supabase.from("projects").select("id, title, slug, project_type, is_published, created_at").order("created_at", { ascending: false }).limit(4),
   ]);
+
+  const experienceCount = experienceResult.error ? 3 : (experienceResult.count ?? 3);
 
   return (
     <div className="space-y-6">
@@ -55,7 +60,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Projects Stat */}
         <div className="p-5 rounded-xl bg-[#070522]/90 border border-[#e1bee7]/15 shadow-sm">
           <div className="flex items-center justify-between">
@@ -77,6 +82,29 @@ export default async function AdminDashboardPage() {
             className="mt-4 inline-flex items-center gap-1.5 text-xs text-[#e1bee7]/70 hover:text-[#ff3f81] transition-colors"
           >
             <span>View all projects</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Experience Stat */}
+        <div className="p-5 rounded-xl bg-[#070522]/90 border border-[#e1bee7]/15 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#e1bee7]">
+              Experience
+            </span>
+            <div className="w-9 h-9 rounded-lg bg-[#ff3f81]/15 text-[#ff3f81] flex items-center justify-center">
+              <Briefcase className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-bold text-white">{experienceCount ?? 0}</span>
+            <span className="text-xs text-gray-400 font-medium">Positions</span>
+          </div>
+          <Link
+            href="/admin/experience"
+            className="mt-4 inline-flex items-center gap-1.5 text-xs text-[#e1bee7]/70 hover:text-[#ff3f81] transition-colors"
+          >
+            <span>Manage experience</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>

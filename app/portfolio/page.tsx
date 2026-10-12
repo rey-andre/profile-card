@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getProfile } from "@/lib/queries/profile.server";
+import { getExperienceList } from "@/lib/queries/experience.server";
 import { getEducationList } from "@/lib/queries/education.server";
 import { getProjectsList } from "@/lib/queries/projects.server";
 import PortfolioNav from "@/components/portfolio/PortfolioNav";
@@ -14,17 +15,20 @@ import {
   ArrowRight,
   Code2,
   Sparkles,
+  Briefcase,
+  MapPin,
 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Portfolio - Reynold Andre",
   description:
-    "Explore projects, web applications, and education history of Reynold Andre, Web Developer and Software Engineering Technology graduate from IPB University.",
+    "Explore projects, work experiences, and education history of Reynold Andre, Web Developer and Software Engineering Technology graduate from IPB University.",
 };
 
 export default async function PortfolioPage() {
-  const [profile, educationList, projects] = await Promise.all([
+  const [profile, experiences, educationList, projects] = await Promise.all([
     getProfile(),
+    getExperienceList(),
     getEducationList(),
     getProjectsList(true), // Only published
   ]);
@@ -118,6 +122,91 @@ export default async function PortfolioPage() {
               </div>
             </div>
           </section>
+
+          {/* Work Experience Section */}
+          {experiences.length > 0 && (
+            <section id="experience" className="py-12 px-4 sm:px-6 max-w-6xl mx-auto">
+              <div className="gsap-exp-header mb-8">
+                <div className="flex items-center gap-2 text-[#ff3f81] font-semibold text-xs uppercase tracking-wider">
+                  <Briefcase className="w-4 h-4" />
+                  <span>Career Journey</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">
+                  Work Experience
+                </h2>
+              </div>
+
+              <div className="gsap-exp-list space-y-6">
+                {experiences.map((exp) => (
+                  <div
+                    key={exp.id}
+                    className="gsap-exp-card profile-card p-6 sm:p-8 border border-[#e1bee7]/15 transition-all duration-300 hover:border-[#ff3f81]/40"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-white/5 pb-4">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-bold text-xl text-white">
+                            {exp.company}
+                          </h3>
+                          {exp.employment_type && (
+                            <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#ff3f81]/15 text-[#ff3f81] border border-[#ff3f81]/30">
+                              {exp.employment_type}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm font-semibold text-[#e1bee7] mt-1">
+                          {exp.role}
+                        </p>
+                      </div>
+
+                      <div className="flex sm:flex-col sm:items-end justify-between text-xs text-gray-400 gap-1 shrink-0">
+                        <span className="font-medium text-white px-2.5 py-0.5 rounded-full bg-white/10 text-[11px]">
+                          {exp.start_date} - {exp.end_date || "Present"}
+                        </span>
+                        {exp.location && (
+                          <div className="flex items-center gap-1 text-[11px] text-[#e1bee7]/70">
+                            <MapPin className="w-3 h-3" />
+                            <span>{exp.location}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {exp.description && (
+                      <p className="text-xs sm:text-sm text-gray-300 leading-relaxed mt-4 italic">
+                        {exp.description}
+                      </p>
+                    )}
+
+                    {exp.responsibilities && exp.responsibilities.length > 0 && (
+                      <ul className="mt-4 space-y-2.5">
+                        {exp.responsibilities.map((resp, i) => (
+                          <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#ff3f81] mt-2 shrink-0" />
+                            <span>{resp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {exp.technologies && exp.technologies.length > 0 && (
+                      <div className="mt-5 pt-4 border-t border-white/5 flex flex-wrap items-center gap-1.5">
+                        <span className="text-[11px] font-medium text-gray-400 mr-1">Skills & Tools:</span>
+                        {exp.technologies.map((tech, i) => (
+                          <span
+                            key={i}
+                            className="px-2 py-0.5 rounded bg-[#19153c] text-[10px] font-medium text-[#e1bee7] border border-[#e1bee7]/20"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Education Section */}
           {educationList.length > 0 && (
